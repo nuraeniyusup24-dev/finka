@@ -1,5 +1,10 @@
-export default function ({ store, redirect }) {
-  if (process.server) return
-  const role = store.state.auth && store.state.auth.user ? store.state.auth.user.role : null
-  if (role !== 'ortu') redirect('/ortu')
+export default function ({ store, redirect, route }) {
+  // Ambil data user dari Vuex state auth
+  const user = store.state.auth ? store.state.auth.user : null
+
+  // 1. Jika pengguna belum login atau bukan ber-role 'ortu'
+  if (!user || user.role !== 'ortu') {
+    // Alihkan ke /login (bukan ke /ortu) untuk mencegah infinite redirect loop
+    return redirect('/login?next=' + encodeURIComponent(route.fullPath))
+  }
 }
